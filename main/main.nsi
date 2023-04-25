@@ -53,40 +53,60 @@ VIProductVersion "${PRODUCT_BUILD_VERSION}" ; product verion(actual replace File
 !insertmacro MUI_LANGUAGE "English" ; Languages selection after Install Pages and not before, trobule: https://nsis-dev.github.io/NSIS-Forums/html/t-278169.html
 
 
-
 ; BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}" ; the text under install 
 ; ; install page
 ; ShowInstDetails hide
 ; ShowUnInstDetails nevershow ; disable uninstall details to boost
 
-Section "Section1" SEC01
+Section -myapp
   SetOutPath "$INSTDIR"
+  SetOverwrite ifnewer
+
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
-  File "..\myapp\MyApp.exe"
+  File "..\myapp\MyApp.exe" ;app execute
+  File "/oname=$INSTDIR\repair.file" "..\myapp\s_win_repair.file" ;rename to repair.file
+
+  ; install all files in myapp\bin\ to $INSTDIR\bin
+  SetOutPath "$INSTDIR\bin"
+  File /r "..\myapp\bin\*.*"
+
+  ; install MUI_icon to $INSTDIR\resources
+  SetOutPath "$INSTDIR\resources"
+  File "/oname=uninstallerIcon.ico" "${MUI_ICON}" 
+
 SectionEnd
 
-; Section -Post
-;   WriteUninstaller "$INSTDIR\uninst.exe"
-; SectionEnd
+Section "Section1" SEC01
+  ; move to section "myapp"
+  ; SetOutPath "$INSTDIR"
+  ; WriteUninstaller "$INSTDIR\uninstall.exe"
+
+  ; File "..\myapp\MyApp.exe"
+SectionEnd
 
 ; Section un.onUserAbort
 ;   # your code here
 ; SectionEnd
 
 Section -Uninstall
-;   Delete "$INSTDIR\${PRODUCT_NAME}.url"
-;   Delete "$INSTDIR\uninst.exe"
-;   Delete "$INSTDIR\Example.file"
-;   Delete "$INSTDIR\AppMainExe.exe"
+  Delete "$INSTDIR\uninstall.exe"
+  Delete "$INSTDIR\repair.file"
+  Delete "$INSTDIR\MyApp.exe"
 
+  RMDir /r "$INSTDIR\bin"
+
+  Delete "$INSTDIR\resources\uninstallerIcon.ico"
+  RMDir "$INSTDIR\resources"
+
+  RMDir "$INSTDIR"
+  
 ;   Delete "$SMPROGRAMS\My application\Uninstall.lnk"
 ;   Delete "$SMPROGRAMS\My application\Website.lnk"
 ;   Delete "$DESKTOP\My application.lnk"
 ;   Delete "$SMPROGRAMS\My application\My application.lnk"
 
 ;   RMDir "$SMPROGRAMS\My application"
-;   RMDir "$INSTDIR"
 
 ;   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
 ;   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
