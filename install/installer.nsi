@@ -77,14 +77,6 @@ Section -myapp
 
 SectionEnd
 
-Section "Section1" SEC01
-  ; move to section "myapp"
-  ; SetOutPath "$INSTDIR"
-  ; WriteUninstaller "$INSTDIR\uninstall.exe"
-
-  ; File "..\myapp\MyApp.exe"
-SectionEnd
-
 ; Section un.onUserAbort
 ;   # your code here
 ; SectionEnd
