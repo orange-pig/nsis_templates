@@ -6,9 +6,11 @@ An nsis sample project, corresponding to a Chinese [article](https://juejin.cn/p
 
 ```
 |---- root
-    |---- main
+    |---- base
+    |---- install
     |---- myapp
 ```
 
-- `main` is a simple project, the main.nsi is the only one script code file.
 - `myapp` is a software which is the package target to install.
+- `base` base is a project that contains the main structure of the packaging script.
+- `install` install is a project that adds installation and uninstallation content on the basis of base.
