@@ -6,6 +6,7 @@
 !define PRODUCT_PUBLISHER "My company, Inc."
 !define PRODUCT_COPYRIGHT "Copyright (c) 2023 My company Inc."
 !define PRODUCT_WEB_SITE "http://www.mycompany.com"
+!define PRODUCT_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 
 # info of installer
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}" ; set name of installer execute
@@ -83,6 +84,14 @@ Section -myapp
     CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_SHORT_NAME}.exe"
 
+  ; Register the installed software
+  WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "DisplayName" "$(^Name)"
+  WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "InstallDir" "$INSTDIR"
+  WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "UninstallString" "$INSTDIR\uninstall.exe"
+  WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "DisplayIcon" "$INSTDIR\resources\uninstallerIcon.ico"
+  WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
+  WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
 ; Section un.onUserAbort
@@ -108,14 +117,9 @@ Section -Uninstall
 
   RMDir "$INSTDIR"
   
-;   Delete "$SMPROGRAMS\My application\Uninstall.lnk"
-;   Delete "$SMPROGRAMS\My application\Website.lnk"
-;   Delete "$DESKTOP\My application.lnk"
-;   Delete "$SMPROGRAMS\My application\My application.lnk"
-
-;   RMDir "$SMPROGRAMS\My application"
-
-;   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
-;   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
-;   SetAutoClose true
+  ; delete reg item
+  DeleteRegKey HKLM "${PRODUCT_UNINSTALL_KEY}"
+  
+  ; close after finish
+  SetAutoClose true
 SectionEnd
