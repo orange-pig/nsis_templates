@@ -10,7 +10,7 @@
 # info of installer
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}" ; set name of installer execute
 OutFile "MyApp_Setup.exe" ; set file name of compiler out
-Icon "..\myapp\nsis.ico"
+Icon "..\${PRODUCT_SHORT_NAME}\nsis.ico"
 InstallDir "C:\${PRODUCT_SHORT_NAME}" ; set the default install dir
 
 # info of installer execute file
@@ -75,6 +75,14 @@ Section -myapp
   SetOutPath "$INSTDIR\resources"
   File "/oname=uninstallerIcon.ico" "${MUI_ICON}" 
 
+  ; Desktop icon
+  CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_SHORT_NAME}.exe"
+
+  ; Start Menu icon
+  IfFileExists "$SMPROGRAMS\${PRODUCT_NAME}" +2 0
+    CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_SHORT_NAME}.exe"
+
 SectionEnd
 
 ; Section un.onUserAbort
@@ -90,6 +98,13 @@ Section -Uninstall
 
   Delete "$INSTDIR\resources\uninstallerIcon.ico"
   RMDir "$INSTDIR\resources"
+
+  ; delete Desktop icon
+  Delete "$DESKTOP\${PRODUCT_NAME}.lnk"
+
+  ; delete start menu folder 
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
+  RMDir "$SMPROGRAMS\${PRODUCT_NAME}"
 
   RMDir "$INSTDIR"
   
