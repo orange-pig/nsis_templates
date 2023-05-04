@@ -8,6 +8,19 @@
 !define PRODUCT_WEB_SITE "http://www.mycompany.com"
 !define PRODUCT_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 
+
+# Variables
+Var PICStudio.Header.SubText ; Sub text in the header area
+Var PICStudio.Component.MainText 
+Var PICStudio.Component.InstallationType
+Var PICStudio.Component.InstallationTypeText
+Var PICStudio.Component.ComponentListTitleText
+Var PICStudio.Component.ComponentList
+Var PICStudio.Component.DescriptionTitleText
+Var PICStudio.Component.DescriptionText
+Var PICStudio.Component.DiskSizeText 
+
+
 # info of installer
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}" ; set name of installer execute
 OutFile "MyApp_Setup.exe" ; set file name of compiler out
@@ -51,6 +64,7 @@ BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 !define MUI_PAGE_HEADER_TEXT "Component Selection"
 !define MUI_COMPONENTSPAGE_TEXT_COMPLIST "Select components to install:"
 !define MUI_PAGE_HEADER_SUBTEXT "Select the components you want to install."
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW ComponentsPageShow
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
@@ -68,11 +82,32 @@ ShowUnInstDetails nevershow ; disable uninstall details to boost
 ; Language files
 !insertmacro MUI_LANGUAGE "English" ; Languages selection after Install Pages and not before, trobule: https://nsis-dev.github.io/NSIS-Forums/html/t-278169.html
 
+; When components page show
+Function ComponentsPageShow
+  FindWindow $0 "#32770" "" $HWNDPARENT
 
-; BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}" ; the text under install 
-; ; install page
-; ShowInstDetails hide
-; ShowUnInstDetails nevershow ; disable uninstall details to boost
+  GetDlgItem $PICStudio.Header.SubText $HWNDPARENT 1038 ; header area subtext
+  GetDlgItem $PICStudio.Component.MainText $0 1006 ; The main text of the content area
+  GetDlgItem $PICStudio.Component.DiskSizeText $0 1023 ; required disk size text
+  GetDlgItem $PICStudio.Component.ComponentList $0 1032 ; component list
+  GetDlgItem $PICStudio.Component.ComponentListTitleText $0 1022 ; Component list title text
+  GetDlgItem $PICStudio.Component.InstallationTypeText $0 1021 ; Title text for the installation type
+  GetDlgItem $PICStudio.Component.DescriptionTitleText $0 1042 ; description title text
+  GetDlgItem $PICStudio.Component.DescriptionText $0 1043 ; The content text of the description
+  GetDlgItem $PICStudio.Component.InstallationType $0 1017 ; installation type
+
+  ShowWindow $PICStudio.Header.SubText ${SW_HIDE} ; Hide header area subtext
+  ShowWindow $PICStudio.Component.MainText ${SW_HIDE} ; Hide the main text of the content area
+  ShowWindow $PICStudio.Component.InstallationTypeText ${SW_HIDE} ; Hide header text for installation types
+  ShowWindow $PICStudio.Component.InstallationType ${SW_HIDE} ; Hide installation type
+  ShowWindow $PICStudio.Component.DescriptionTitleText ${SW_HIDE} ; Hide the title text of the description
+
+  # MSDN https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
+  System::Call "User32::SetWindowPos(i $PICStudio.Component.ComponentListTitleText, i 0, i 0, i 0, i 270, i 13, i 0)" ; Sets the position of the component list title text
+  System::Call "User32::SetWindowPos(i $PICStudio.Component.ComponentList, i 0, i 0, i 18, i 270, i 176, i 0)" ; Set the position of the component list
+  System::Call "User32::SetWindowPos(i $PICStudio.Component.DescriptionText, i 0, i 285, i 16, i 164, i 176, i 0)" ; Sets the position of the content text of the description
+  System::Call "User32::SetWindowPos(i $PICStudio.Component.DiskSizeText, i 0, i 0, i 210, i 0, i 0, i 1)" ; Sets the position of the disk size text
+FunctionEnd
 
 Section -myapp
   SetOutPath "$INSTDIR"
