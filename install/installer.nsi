@@ -45,8 +45,12 @@ BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "..\resource\welcome_install.bmp"
 !insertmacro MUI_PAGE_WELCOME
 ; License page
+!define MUI_LICENSEPAGE_CHECKBOX
 !insertmacro MUI_PAGE_LICENSE "..\myapp\license.txt"
 ; Components page
+!define MUI_PAGE_HEADER_TEXT "Component Selection"
+!define MUI_COMPONENTSPAGE_TEXT_COMPLIST "Select components to install:"
+!define MUI_PAGE_HEADER_SUBTEXT "Select the components you want to install."
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
