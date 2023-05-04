@@ -42,6 +42,7 @@ BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 !define MUI_HEADERIMAGE_RIGHT ; Display to right
 
 ; Welcome page
+!define MUI_WELCOMEFINISHPAGE_BITMAP "..\resource\welcome_install.bmp"
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "..\myapp\license.txt"
