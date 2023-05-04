@@ -27,11 +27,19 @@ VIProductVersion "${PRODUCT_BUILD_VERSION}" ; product verion(actual replace File
 # use MUI
 !include "MUI.nsh"
 
+# base ui info
+Caption "${PRODUCT_NAME} Installer"
+BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "..\myapp\nsis.ico"
 # uninstaller
 !define MUI_UNICON "..\myapp\uninstall.ico"
+!define MUI_HEADERIMAGE ; Defining this value is the basis for the follow two definitions
+!define MUI_HEADERIMAGE_BITMAP "..\resource\header_150x57.bmp"
+!define MUI_HEADERIMAGE_BITMAP_STRETCH NoStretchNoCropNoAlign
+!define MUI_HEADERIMAGE_RIGHT ; Display to right
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -42,12 +50,14 @@ VIProductVersion "${PRODUCT_BUILD_VERSION}" ; product verion(actual replace File
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
+ShowInstDetails hide
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_COMPONENTS
+ShowUnInstDetails nevershow ; disable uninstall details to boost
 !insertmacro MUI_UNPAGE_INSTFILES
 
 ; Language files
