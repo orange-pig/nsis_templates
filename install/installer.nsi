@@ -10,15 +10,15 @@
 
 
 # Variables
-Var PICStudio.Header.SubText ; Sub text in the header area
-Var PICStudio.Component.MainText 
-Var PICStudio.Component.InstallationType
-Var PICStudio.Component.InstallationTypeText
-Var PICStudio.Component.ComponentListTitleText
-Var PICStudio.Component.ComponentList
-Var PICStudio.Component.DescriptionTitleText
-Var PICStudio.Component.DescriptionText
-Var PICStudio.Component.DiskSizeText 
+Var MyApp.Header.SubText ; Sub text in the header area
+Var MyApp.Component.MainText 
+Var MyApp.Component.InstallationType
+Var MyApp.Component.InstallationTypeText
+Var MyApp.Component.ComponentListTitleText
+Var MyApp.Component.ComponentList
+Var MyApp.Component.DescriptionTitleText
+Var MyApp.Component.DescriptionText
+Var MyApp.Component.DiskSizeText 
 
 
 # info of installer
@@ -86,27 +86,31 @@ ShowUnInstDetails nevershow ; disable uninstall details to boost
 Function ComponentsPageShow
   FindWindow $0 "#32770" "" $HWNDPARENT
 
-  GetDlgItem $PICStudio.Header.SubText $HWNDPARENT 1038 ; header area subtext
-  GetDlgItem $PICStudio.Component.MainText $0 1006 ; The main text of the content area
-  GetDlgItem $PICStudio.Component.DiskSizeText $0 1023 ; required disk size text
-  GetDlgItem $PICStudio.Component.ComponentList $0 1032 ; component list
-  GetDlgItem $PICStudio.Component.ComponentListTitleText $0 1022 ; Component list title text
-  GetDlgItem $PICStudio.Component.InstallationTypeText $0 1021 ; Title text for the installation type
-  GetDlgItem $PICStudio.Component.DescriptionTitleText $0 1042 ; description title text
-  GetDlgItem $PICStudio.Component.DescriptionText $0 1043 ; The content text of the description
-  GetDlgItem $PICStudio.Component.InstallationType $0 1017 ; installation type
+  GetDlgItem $MyApp.Header.SubText $HWNDPARENT 1038 ; header area subtext
+  ShowWindow $MyApp.Header.SubText ${SW_HIDE} ; Hide header area subtext
 
-  ShowWindow $PICStudio.Header.SubText ${SW_HIDE} ; Hide header area subtext
-  ShowWindow $PICStudio.Component.MainText ${SW_HIDE} ; Hide the main text of the content area
-  ShowWindow $PICStudio.Component.InstallationTypeText ${SW_HIDE} ; Hide header text for installation types
-  ShowWindow $PICStudio.Component.InstallationType ${SW_HIDE} ; Hide installation type
-  ShowWindow $PICStudio.Component.DescriptionTitleText ${SW_HIDE} ; Hide the title text of the description
+  GetDlgItem $MyApp.Component.MainText $0 1006 ; The main text of the content area
+  ShowWindow $MyApp.Component.MainText ${SW_HIDE} ; Hide the main text of the content area
 
-  # MSDN https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
-  System::Call "User32::SetWindowPos(i $PICStudio.Component.ComponentListTitleText, i 0, i 0, i 0, i 270, i 13, i 0)" ; Sets the position of the component list title text
-  System::Call "User32::SetWindowPos(i $PICStudio.Component.ComponentList, i 0, i 0, i 18, i 270, i 176, i 0)" ; Set the position of the component list
-  System::Call "User32::SetWindowPos(i $PICStudio.Component.DescriptionText, i 0, i 285, i 16, i 164, i 176, i 0)" ; Sets the position of the content text of the description
-  System::Call "User32::SetWindowPos(i $PICStudio.Component.DiskSizeText, i 0, i 0, i 210, i 0, i 0, i 1)" ; Sets the position of the disk size text
+  GetDlgItem $MyApp.Component.InstallationTypeText $0 1021 ; Title text for the installation type
+  GetDlgItem $MyApp.Component.InstallationType $0 1017 ; installation type
+  ShowWindow $MyApp.Component.InstallationTypeText ${SW_HIDE} ; Hide header text for installation types
+  ShowWindow $MyApp.Component.InstallationType ${SW_HIDE} ; Hide installation type
+  
+  GetDlgItem $MyApp.Component.DescriptionTitleText $0 1042 ; description title text
+  ShowWindow $MyApp.Component.DescriptionTitleText ${SW_HIDE} ; Hide the title text of the description
+
+  GetDlgItem $MyApp.Component.ComponentListTitleText $0 1022 ; Component list title text
+  GetDlgItem $MyApp.Component.ComponentList $0 1032 ; component list
+  GetDlgItem $MyApp.Component.DiskSizeText $0 1023 ; required disk size text
+  GetDlgItem $MyApp.Component.DescriptionText $0 1043 ; The content text of the description
+
+
+  ; # MSDN https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
+  System::Call "User32::SetWindowPos(i $MyApp.Component.ComponentListTitleText, i 0, i 0, i 0, i 270, i 13, i 0)" ; Sets the position of the component list title text
+  System::Call "User32::SetWindowPos(i $MyApp.Component.ComponentList, i 0, i 0, i 18, i 270, i 176, i 0)" ; Set the position of the component list
+  System::Call "User32::SetWindowPos(i $MyApp.Component.DescriptionText, i 0, i 285, i 16, i 164, i 176, i 0)" ; Sets the position of the content text of the description
+  System::Call "User32::SetWindowPos(i $MyApp.Component.DiskSizeText, i 0, i 0, i 210, i 0, i 0, i 1)" ; Sets the position of the disk size text
 FunctionEnd
 
 Section -myapp
