@@ -72,6 +72,13 @@ BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 ShowInstDetails hide
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
+; Way 1
+; !define MUI_FINISHPAGE_RUN "$INSTDIR\${PRODUCT_SHORT_NAME}.exe"
+; !define MUI_FINISHPAGE_RUN_TEXT "NB My App!"
+; Way 2
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "NB My App!"
+!define MUI_FINISHPAGE_RUN_FUNCTION FinishRun
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -112,6 +119,12 @@ Function ComponentsPageShow
   System::Call "User32::SetWindowPos(i $MyApp.Component.DescriptionText, i 0, i 285, i 16, i 164, i 176, i 0)" ; Sets the position of the content text of the description
   System::Call "User32::SetWindowPos(i $MyApp.Component.DiskSizeText, i 0, i 0, i 210, i 0, i 0, i 1)" ; Sets the position of the disk size text
 FunctionEnd
+
+Function FinishRun
+  SetOutPath "$INSTDIR"
+  ExecShell "" "$INSTDIR\${PRODUCT_SHORT_NAME}.exe"
+FunctionEnd
+
 
 Section -myapp
   SetOutPath "$INSTDIR"
