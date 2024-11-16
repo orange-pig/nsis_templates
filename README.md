@@ -5,10 +5,12 @@ An nsis sample project, corresponding to a Chinese [article](https://juejin.cn/p
 ## Project structure
 
 ```
-|---- root
-    |---- base
-    |---- install
-    |---- myapp
+Root
+├── base
+│   └── installer.nsi
+├── install
+│   └── installer.nsi
+└── myapp
 ```
 
 - `myapp` is a software which is the package target to install.
@@ -19,7 +21,7 @@ An nsis sample project, corresponding to a Chinese [article](https://juejin.cn/p
 
 example to make base project's installer execute:
 
-1. move to prorject folder
+1. move to prorject folder, example **base**
 
 ```
 > cd base
