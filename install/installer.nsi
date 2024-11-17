@@ -82,6 +82,7 @@ ShowInstDetails hide
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
+!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.ComponentsPageShow 
 !insertmacro MUI_UNPAGE_COMPONENTS
 ShowUnInstDetails nevershow ; disable uninstall details to boost
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -89,8 +90,8 @@ ShowUnInstDetails nevershow ; disable uninstall details to boost
 ; Language files
 !insertmacro MUI_LANGUAGE "English" ; Languages selection after Install Pages and not before, trobule: https://nsis-dev.github.io/NSIS-Forums/html/t-278169.html
 
-; When components page show
-Function ComponentsPageShow
+
+!macro RelayoutComponents
   FindWindow $0 "#32770" "" $HWNDPARENT
 
   GetDlgItem $MyApp.Header.SubText $HWNDPARENT 1038 ; header area subtext
@@ -118,6 +119,11 @@ Function ComponentsPageShow
   System::Call "User32::SetWindowPos(i $MyApp.Component.ComponentList, i 0, i 0, i 18, i 270, i 176, i 0)" ; Set the position of the component list
   System::Call "User32::SetWindowPos(i $MyApp.Component.DescriptionText, i 0, i 285, i 16, i 164, i 176, i 0)" ; Sets the position of the content text of the description
   System::Call "User32::SetWindowPos(i $MyApp.Component.DiskSizeText, i 0, i 0, i 210, i 0, i 0, i 1)" ; Sets the position of the disk size text
+!macroend
+
+; When components page show
+Function ComponentsPageShow
+  !insertmacro RelayoutComponents
 FunctionEnd
 
 Function FinishRun
@@ -171,6 +177,30 @@ Section -driver
   nsExec::Exec "$INSTDIR\driver\install.bat"
 SectionEnd
 
+; ! bold name
+Section !plugin1
+  SetOutPath "$INSTDIR"
+  SetOverwrite ifnewer
+
+  File "..\myapp\plugins\plugin1.dll"
+SectionEnd
+
+; /o default to be unselect
+Section /o plugin2
+  SetOutPath "$INSTDIR\plugins"
+  SetOverwrite ifnewer
+
+  File /r "..\myapp\plugins\plugin2"
+SectionEnd
+
+Section !un.plugin1
+  Delete "$INSTDIR\plugin1.dll"
+SectionEnd
+
+Section /o un.plugin2
+  RMDir /r "$INSTDIR\plugins\plugin2"
+SectionEnd
+
 Section -un.driver
   ; run uninstall
   nsExec::Exec "$INSTDIR\driver\uninstall.bat"
@@ -207,3 +237,7 @@ Section -Uninstall
   ; close after finish
   SetAutoClose true
 SectionEnd
+
+Function un.ComponentsPageShow
+  !insertmacro RelayoutComponents
+FunctionEnd
