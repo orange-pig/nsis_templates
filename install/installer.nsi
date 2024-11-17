@@ -275,6 +275,12 @@ Section /o "Dec Docs"
 SectionEnd
 SectionGroupEnd
 
+SectionGroup /e "Future"
+Section /o "F1" SEC_F1_ID
+SectionEnd
+SectionGroupEnd
+
+
 !macro componentInstalled sectionID code name
   Push $0
 
@@ -294,6 +300,9 @@ Function GUIInit
   !insertmacro componentInstalled ${SEC_PLUGIN1_ID} ${PLUGIN1_CODE} "plugin1"
   !insertmacro componentInstalled ${SEC_PLUGIN2_ID} ${PLUGIN2_CODE} "plugin2"
   !insertmacro componentInstalled ${SEC_MYSQL_ID} ${MYSQL_CODE} "MySQL"
+
+  ;  Futures
+  SectionSetFlags ${SEC_F1_ID} ${SF_RO}
 FunctionEnd
 
 Section !un.plugin1 SEC_UN_PLUGIN1_ID
@@ -375,11 +384,15 @@ FunctionEnd
 !define DESCRIPTION_PLUGIN1 "Plugin1 is a highly efficient tool designed to optimize users' workflows. It offers a wide range of features, including data processing, quick analysis, and intelligent operation suggestions. Whether used in personal projects or team collaborations, Plugin1 significantly boosts productivity. With its simple and user-friendly interface, users can easily get started with minimal effort."
 !define DESCRIPTION_PLUGIN2 "Plugin2 is dedicated to providing comprehensive multi-functional extension support, suitable for various scenarios. Its powerful modular design allows users to flexibly configure features according to their needs, enabling higher productivity and streamlined workflow management. Plugin2 combines stability with flexibility, making it the ideal choice for meeting professional demands."
 !define DESCRIPTION_MYSQL "This software utilizes a MySQL database to ensure reliable and efficient data management. With robust performance, scalability, and security, MySQL serves as the backbone for storing, retrieving, and processing application data, enabling seamless and stable operations."
+!define DESCRIPTION_F1 "This component provides a powerful solution for managing user authentication and authorization with advanced security measures. It supports multiple authentication methods, including OAuth, and ensures secure data access. With customizable configurations and a user-friendly interface, it simplifies the implementation of security protocols, making it suitable for modern web and mobile applications."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PLUGIN1_ID} "${DESCRIPTION_PLUGIN1}"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PLUGIN2_ID} "${DESCRIPTION_PLUGIN2}"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_MYSQL_ID} "${DESCRIPTION_MYSQL}"
+  
+  ;  Futures
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_F1_ID} "${DESCRIPTION_F1}"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN 
