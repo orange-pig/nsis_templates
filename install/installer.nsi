@@ -51,6 +51,7 @@ BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 ; uninstaller
 !define MUI_UNICON "..\myapp\uninstall.ico"
 !define MUI_CUSTOMFUNCTION_GUIINIT GUIInit
+!define MUI_CUSTOMFUNCTION_UNGUIINIT un.UNGUIInit
 !define MUI_HEADERIMAGE ; Defining this value is the basis for the follow two definitions
 !define MUI_HEADERIMAGE_BITMAP "..\resource\header_150x57.bmp"
 !define MUI_HEADERIMAGE_BITMAP_STRETCH NoStretchNoCropNoAlign
@@ -134,6 +135,13 @@ Function FinishRun
 FunctionEnd
 
 Function .onInit
+  ; Read the current installed plugins code
+  ReadRegDWORD $MyApp.InstalledPluginsCode HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins"
+  IfErrors 0 +2
+    StrCpy $MyApp.InstalledPluginsCode 0 ; init to zero
+FunctionEnd
+
+Function un.onInit
   ; Read the current installed plugins code
   ReadRegDWORD $MyApp.InstalledPluginsCode HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins"
   IfErrors 0 +2
@@ -281,6 +289,23 @@ Section -Uninstall
   ; close after finish
   SetAutoClose true
 SectionEnd
+
+!macro uncomponentInstalled sectionID code
+  Push $0
+
+  IntOp $0 $MyApp.InstalledPluginsCode & ${code}
+
+  ${if} $0 != ${code}
+    SectionSetText ${sectionID} "" ; set white name to disapear section
+  ${endif}
+
+  Pop $0
+!macroend
+
+Function un.UNGUIInit
+  !insertmacro uncomponentInstalled ${SEC_UN_PLUGIN1_ID} ${PLUGIN1_CODE}
+  !insertmacro uncomponentInstalled ${SEC_UN_PLUGIN2_ID} ${PLUGIN2_CODE}
+FunctionEnd
 
 Function un.ComponentsPageShow
   !insertmacro RelayoutComponents
