@@ -10,12 +10,14 @@ Root
 │   └── installer.nsi
 ├── install
 │   └── installer.nsi
-└── myapp
+├── myapp
+└── resource
 ```
 
-- `myapp` is a software which is the package target to install.
 - `base` base is a project that contains the main structure of the packaging script.
 - `install` install is a project that adds installation and uninstallation content on the basis of base.
+- `myapp` is a software which is the package target to install.
+- `resource` is some resource files for packaing.
 
 ## How to use
 

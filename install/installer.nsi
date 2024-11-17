@@ -161,6 +161,23 @@ Section -myapp
   WriteRegStr HKLM "${PRODUCT_UNINSTALL_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
+Section -driver
+  SetOutPath "$INSTDIR"
+  SetOverwrite ifnewer
+
+  File /r "..\myapp\driver"
+
+  ; run install
+  nsExec::Exec "$INSTDIR\driver\install.bat"
+SectionEnd
+
+Section -un.driver
+  ; run uninstall
+  nsExec::Exec "$INSTDIR\driver\uninstall.bat"
+
+  RMDir /r "$INSTDIR\driver"
+SectionEnd
+
 ; Section un.onUserAbort
 ;   # your code here
 ; SectionEnd
