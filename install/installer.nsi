@@ -48,8 +48,9 @@ BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "..\myapp\nsis.ico"
-# uninstaller
+; uninstaller
 !define MUI_UNICON "..\myapp\uninstall.ico"
+!define MUI_CUSTOMFUNCTION_GUIINIT GUIInit
 !define MUI_HEADERIMAGE ; Defining this value is the basis for the follow two definitions
 !define MUI_HEADERIMAGE_BITMAP "..\resource\header_150x57.bmp"
 !define MUI_HEADERIMAGE_BITMAP_STRETCH NoStretchNoCropNoAlign
@@ -215,6 +216,26 @@ Section /o plugin2 SEC_PLUGIN2_ID
   IntOp $MyApp.InstalledPluginsCode $MyApp.InstalledPluginsCode | ${PLUGIN2_CODE}
 	WriteRegDWORD HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins" $MyApp.InstalledPluginsCode
 SectionEnd
+
+!macro componentInstalled sectionID code name
+  Push $0
+
+  IntOp $0 $MyApp.InstalledPluginsCode & ${code}
+  ; MessageBox MB_ICONINFORMATION|MB_OK "Code: $MyApp.InstalledPluginsCode"
+
+  ${if} $0 == ${code}
+    SectionSetFlags ${sectionID} 0 ; uncheck section
+    SectionSetText ${sectionID} "${name} (Installed)" ; append text 'Installed'
+  ${endif}
+
+  Pop $0
+!macroend
+
+; On UI init
+Function GUIInit
+  !insertmacro componentInstalled ${SEC_PLUGIN1_ID} ${PLUGIN1_CODE} "plugin1"
+  !insertmacro componentInstalled ${SEC_PLUGIN2_ID} ${PLUGIN2_CODE} "plugin2"
+FunctionEnd
 
 Section !un.plugin1 SEC_UN_PLUGIN1_ID
   Delete "$INSTDIR\plugin1.dll"
