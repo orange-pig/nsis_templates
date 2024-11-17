@@ -106,7 +106,7 @@ ShowUnInstDetails nevershow ; disable uninstall details to boost
   GetDlgItem $MyApp.Component.InstallationTypeText $0 1021 ; Title text for the installation type
   GetDlgItem $MyApp.Component.InstallationType $0 1017 ; installation type
   ShowWindow $MyApp.Component.InstallationTypeText ${SW_HIDE} ; Hide header text for installation types
-  ShowWindow $MyApp.Component.InstallationType ${SW_HIDE} ; Hide installation type
+  ; ShowWindow $MyApp.Component.InstallationType ${SW_HIDE} ; Hide installation type
   
   GetDlgItem $MyApp.Component.DescriptionTitleText $0 1042 ; description title text
   ShowWindow $MyApp.Component.DescriptionTitleText ${SW_HIDE} ; Hide the title text of the description
@@ -118,10 +118,12 @@ ShowUnInstDetails nevershow ; disable uninstall details to boost
 
 
   ; # MSDN https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
-  System::Call "User32::SetWindowPos(i $MyApp.Component.ComponentListTitleText, i 0, i 0, i 0, i 270, i 13, i 0)" ; Sets the position of the component list title text
-  System::Call "User32::SetWindowPos(i $MyApp.Component.ComponentList, i 0, i 0, i 18, i 270, i 176, i 0)" ; Set the position of the component list
-  System::Call "User32::SetWindowPos(i $MyApp.Component.DescriptionText, i 0, i 285, i 16, i 164, i 176, i 0)" ; Sets the position of the content text of the description
+  System::Call "User32::SetWindowPos(i $MyApp.Component.ComponentListTitleText, i 0, i 0, i 6, i 140, i 13, i 0)" ; Sets the position of the component list title text
+  System::Call "User32::SetWindowPos(i $MyApp.Component.ComponentList, i 0, i 0, i 24, i 270, i 176, i 0)" ; Set the position of the component list
+  System::Call "User32::SetWindowPos(i $MyApp.Component.DescriptionText, i 0, i 285, i 20, i 164, i 176, i 0)" ; Sets the position of the content text of the description
   System::Call "User32::SetWindowPos(i $MyApp.Component.DiskSizeText, i 0, i 0, i 210, i 0, i 0, i 1)" ; Sets the position of the disk size text
+  ; System::Call "User32::SetWindowPos(i $MyApp.Component.InstallationTypeText, i 0, i 135, i 0, i 180, i 13, i 0)" 
+  System::Call "User32::SetWindowPos(i $MyApp.Component.InstallationType, i 0, i 150, i 0, i 120, i 13, i 0)" 
 !macroend
 
 ; When components page show
@@ -200,8 +202,12 @@ SectionEnd
 !define PLUGIN2_CODE 2 ;0010
 !define MYSQL_CODE   4 ;0100
 
+InstType "Typical" ; type 1
+InstType "Full"  ; type 2
+
 ; ! bold name
 Section !plugin1 SEC_PLUGIN1_ID
+  SectionIn 1 2
   AddSize 512
 
   SetOutPath "$INSTDIR"
@@ -215,6 +221,7 @@ SectionEnd
 
 ; /o default to be unselect
 Section /o plugin2 SEC_PLUGIN2_ID
+  SectionIn 2
   AddSize 512
 
   SetOutPath "$INSTDIR\plugins"
@@ -228,6 +235,7 @@ SectionEnd
 
 SectionGroup /e "Tools"
 Section "MySQL" SEC_MYSQL_ID
+  SectionIn 1 2
   AddSize 56265
   SetOutPath "$LocalAppdata\${PRODUCT_SHORT_NAME}\mysql"
   SetOverwrite ifnewer
@@ -245,6 +253,25 @@ Section "MySQL" SEC_MYSQL_ID
 	WriteRegDWORD HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins" $MyApp.InstalledPluginsCode
 
   ; Do more.. add envriment, start server, etc.
+SectionEnd
+SectionGroupEnd
+
+SectionGroup /e "Docs"
+Section /o "User Manual"
+  SectionIn 1 2
+  AddSize 12000
+  SetOutPath "$DOCUMENTS\${PRODUCT_SHORT_NAME}"
+  SetOverwrite ifnewer
+  
+  File "..\resource\docs\User Manual.doc"
+SectionEnd
+Section /o "Dec Docs"
+  SectionIn 2
+  AddSize 25000
+  SetOutPath "$DOCUMENTS\${PRODUCT_SHORT_NAME}"
+  SetOverwrite ifnewer
+  
+  File /r "..\resource\docs\Dev Docs"
 SectionEnd
 SectionGroupEnd
 
