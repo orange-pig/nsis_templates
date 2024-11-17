@@ -198,6 +198,7 @@ SectionEnd
 
 !define PLUGIN1_CODE 1 ;0001
 !define PLUGIN2_CODE 2 ;0010
+!define MYSQL_CODE   4 ;0100
 
 ; ! bold name
 Section !plugin1 SEC_PLUGIN1_ID
@@ -225,6 +226,28 @@ Section /o plugin2 SEC_PLUGIN2_ID
 	WriteRegDWORD HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins" $MyApp.InstalledPluginsCode
 SectionEnd
 
+SectionGroup /e "Tools"
+Section "MySQL" SEC_MYSQL_ID
+  AddSize 56265
+  SetOutPath "$LocalAppdata\${PRODUCT_SHORT_NAME}\mysql"
+  SetOverwrite ifnewer
+  
+  SetCompress off
+  DetailPrint "Install MySQL..."
+  SetDetailsPrint listonly
+  File "/oname=$PLUGINSDIR\mysql.7z" "..\resource\mysql.7z"
+  SetCompress auto
+  SetDetailsPrint both
+
+  Nsis7z::ExtractWithDetails "$PLUGINSDIR\mysql.7z" "Installing MySQL %s..."
+
+  IntOp $MyApp.InstalledPluginsCode $MyApp.InstalledPluginsCode | ${MYSQL_CODE}
+	WriteRegDWORD HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins" $MyApp.InstalledPluginsCode
+
+  ; Do more.. add envriment, start server, etc.
+SectionEnd
+SectionGroupEnd
+
 !macro componentInstalled sectionID code name
   Push $0
 
@@ -243,6 +266,7 @@ SectionEnd
 Function GUIInit
   !insertmacro componentInstalled ${SEC_PLUGIN1_ID} ${PLUGIN1_CODE} "plugin1"
   !insertmacro componentInstalled ${SEC_PLUGIN2_ID} ${PLUGIN2_CODE} "plugin2"
+  !insertmacro componentInstalled ${SEC_MYSQL_ID} ${MYSQL_CODE} "MySQL"
 FunctionEnd
 
 Section !un.plugin1 SEC_UN_PLUGIN1_ID
@@ -252,6 +276,14 @@ SectionEnd
 Section /o un.plugin2 SEC_UN_PLUGIN2_ID
   RMDir /r "$INSTDIR\plugins\plugin2"
 SectionEnd
+
+SectionGroup /e "un.Tools"
+Section /o un.MySQL SEC_UN_MYSQL_ID
+  ; Do more... remove envriment, stop server, etc.
+  
+  RMDir /r "$LocalAppdata\${PRODUCT_SHORT_NAME}\mysql"
+SectionEnd
+SectionGroupEnd
 
 Section -un.driver
   ; run uninstall
@@ -305,6 +337,7 @@ SectionEnd
 Function un.UNGUIInit
   !insertmacro uncomponentInstalled ${SEC_UN_PLUGIN1_ID} ${PLUGIN1_CODE}
   !insertmacro uncomponentInstalled ${SEC_UN_PLUGIN2_ID} ${PLUGIN2_CODE}
+  !insertmacro uncomponentInstalled ${SEC_UN_MYSQL_ID} ${MYSQL_CODE}
 FunctionEnd
 
 Function un.ComponentsPageShow
@@ -314,13 +347,16 @@ FunctionEnd
 ; Set components descriptions
 !define DESCRIPTION_PLUGIN1 "Plugin1 is a highly efficient tool designed to optimize users' workflows. It offers a wide range of features, including data processing, quick analysis, and intelligent operation suggestions. Whether used in personal projects or team collaborations, Plugin1 significantly boosts productivity. With its simple and user-friendly interface, users can easily get started with minimal effort."
 !define DESCRIPTION_PLUGIN2 "Plugin2 is dedicated to providing comprehensive multi-functional extension support, suitable for various scenarios. Its powerful modular design allows users to flexibly configure features according to their needs, enabling higher productivity and streamlined workflow management. Plugin2 combines stability with flexibility, making it the ideal choice for meeting professional demands."
+!define DESCRIPTION_MYSQL "This software utilizes a MySQL database to ensure reliable and efficient data management. With robust performance, scalability, and security, MySQL serves as the backbone for storing, retrieving, and processing application data, enabling seamless and stable operations."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PLUGIN1_ID} "${DESCRIPTION_PLUGIN1}"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PLUGIN2_ID} "${DESCRIPTION_PLUGIN2}"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_MYSQL_ID} "${DESCRIPTION_MYSQL}"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN 
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_UN_PLUGIN1_ID} "${DESCRIPTION_PLUGIN1}"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC_UN_PLUGIN2_ID} "${DESCRIPTION_PLUGIN2}"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_UN_MYSQL_ID} "${DESCRIPTION_MYSQL}"
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_END
