@@ -19,6 +19,7 @@ Var MyApp.Component.ComponentList
 Var MyApp.Component.DescriptionTitleText
 Var MyApp.Component.DescriptionText
 Var MyApp.Component.DiskSizeText 
+Var MyApp.InstalledPluginsCode
 
 
 # info of installer
@@ -131,8 +132,17 @@ Function FinishRun
   ExecShell "" "$INSTDIR\${PRODUCT_SHORT_NAME}.exe"
 FunctionEnd
 
+Function .onInit
+  ; Read the current installed plugins code
+  ReadRegDWORD $MyApp.InstalledPluginsCode HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins"
+  IfErrors 0 +2
+    StrCpy $MyApp.InstalledPluginsCode 0 ; init to zero
+FunctionEnd
 
 Section -myapp
+  ; set the section disk space requirement, unit is KB.
+  AddSize 1024
+
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
 
@@ -177,27 +187,40 @@ Section -driver
   nsExec::Exec "$INSTDIR\driver\install.bat"
 SectionEnd
 
+!define PLUGIN1_CODE 1 ;0001
+!define PLUGIN2_CODE 2 ;0010
+
 ; ! bold name
-Section !plugin1
+Section !plugin1 SEC_PLUGIN1_ID
+  AddSize 512
+
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
 
   File "..\myapp\plugins\plugin1.dll"
+  
+  IntOp $MyApp.InstalledPluginsCode $MyApp.InstalledPluginsCode | ${PLUGIN1_CODE}
+	WriteRegDWORD HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins" $MyApp.InstalledPluginsCode
 SectionEnd
 
 ; /o default to be unselect
-Section /o plugin2
+Section /o plugin2 SEC_PLUGIN2_ID
+  AddSize 512
+
   SetOutPath "$INSTDIR\plugins"
   SetOverwrite ifnewer
 
   File /r "..\myapp\plugins\plugin2"
+  
+  IntOp $MyApp.InstalledPluginsCode $MyApp.InstalledPluginsCode | ${PLUGIN2_CODE}
+	WriteRegDWORD HKLM "${PRODUCT_UNINSTALL_KEY}" "InstalledPlugins" $MyApp.InstalledPluginsCode
 SectionEnd
 
-Section !un.plugin1
+Section !un.plugin1 SEC_UN_PLUGIN1_ID
   Delete "$INSTDIR\plugin1.dll"
 SectionEnd
 
-Section /o un.plugin2
+Section /o un.plugin2 SEC_UN_PLUGIN2_ID
   RMDir /r "$INSTDIR\plugins\plugin2"
 SectionEnd
 
@@ -241,3 +264,17 @@ SectionEnd
 Function un.ComponentsPageShow
   !insertmacro RelayoutComponents
 FunctionEnd
+
+; Set components descriptions
+!define DESCRIPTION_PLUGIN1 "Plugin1 is a highly efficient tool designed to optimize users' workflows. It offers a wide range of features, including data processing, quick analysis, and intelligent operation suggestions. Whether used in personal projects or team collaborations, Plugin1 significantly boosts productivity. With its simple and user-friendly interface, users can easily get started with minimal effort."
+!define DESCRIPTION_PLUGIN2 "Plugin2 is dedicated to providing comprehensive multi-functional extension support, suitable for various scenarios. Its powerful modular design allows users to flexibly configure features according to their needs, enabling higher productivity and streamlined workflow management. Plugin2 combines stability with flexibility, making it the ideal choice for meeting professional demands."
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PLUGIN1_ID} "${DESCRIPTION_PLUGIN1}"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_PLUGIN2_ID} "${DESCRIPTION_PLUGIN2}"
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+!insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN 
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_UN_PLUGIN1_ID} "${DESCRIPTION_PLUGIN1}"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC_UN_PLUGIN2_ID} "${DESCRIPTION_PLUGIN2}"
+!insertmacro MUI_UNFUNCTION_DESCRIPTION_END
