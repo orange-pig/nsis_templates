@@ -56,9 +56,10 @@ BrandingText /TRIMLEFT "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 !define MUI_HEADERIMAGE_BITMAP "..\resource\header_150x57.bmp"
 !define MUI_HEADERIMAGE_BITMAP_STRETCH NoStretchNoCropNoAlign
 !define MUI_HEADERIMAGE_RIGHT ; Display to right
+!define MUI_WELCOMEFINISHPAGE_BITMAP "..\resource\welcome_install.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "..\resource\welcome_uninstall.bmp"
 
 ; Welcome page
-!define MUI_WELCOMEFINISHPAGE_BITMAP "..\resource\welcome_install.bmp"
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !define MUI_LICENSEPAGE_CHECKBOX
@@ -85,6 +86,7 @@ ShowInstDetails hide
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
+!insertmacro MUI_UNPAGE_WELCOME
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW un.ComponentsPageShow 
 !insertmacro MUI_UNPAGE_COMPONENTS
 ShowUnInstDetails nevershow ; disable uninstall details to boost
